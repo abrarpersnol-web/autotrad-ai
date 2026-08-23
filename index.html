@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuraTrade AI - Automated Crypto Trading</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .pulse-glow {
+      box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Navigation -->
+  <nav class="glass-card sticky top-0 z-50 px-6 py-4 flex justify-between items-center border-b border-gray-800">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid me-2 fa-brain-circuit text-indigo-500 text-2xl"></i>
+      <span class="text-xl font-bold tracking-wide text-white">Aura<span class="gradient-text">Trade.AI</span></span>
+    </div>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-400">
+      <a href="#features" class="hover:text-white transition">Features</a>
+      <a href="#dashboard" class="hover:text-white transition">Live Dashboard</a>
+      <a href="#security" class="hover:text-white transition">Security & SSL</a>
+    </div>
+    <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 py-2 rounded-xl text-sm transition pulse-glow">
+      Start Trading ($1 Min)
+    </button>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="py-20 px-6 text-center max-w-4xl mx-mx-auto">
+    <div class="inline-flex items-center gap-2 bg-indigo-950/60 border border-indigo-500/30 text-indigo-400 text-xs px-4 py-1.5 rounded-full mb-6">
+      <i class="fa-solid fa-shield-halved"></i> 256-Bit SSL Encrypted & Autonomous
+    </div>
+    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+      Automated AI Crypto Trading.<br>
+      <span class="gradient-text">Start with as little as $1.00</span>
+    </h1>
+    <p class="text-gray-400 text-base md:text-lg mb-8 max-w-2xl mx-auto">
+      Deposit $1 or more, sit back, and let our proprietary neural network scan high-frequency market opportunities and execute winning trades 24/7.
+    </p>
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <button onclick="openModal()" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold px-8 py-3 rounded-xl text-lg hover:opacity-90 transition shadow-lg">
+        Deposit & Start ($1 Min)
+      </button>
+      <a href="#dashboard" class="glass-card text-gray-300 font-semibold px-8 py-3 rounded-xl text-lg hover:bg-gray-800 transition">
+        View Live Performance
+      </a>
+    </div>
+  </section>
+
+  <!-- Live AI Trading Dashboard Widget -->
+  <section id="dashboard" class="max-w-5xl mx-auto px-6 py-8 w-full">
+    <div class="glass-card rounded-2xl p-6 md:p-8 border border-gray-800">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-gray-800 pb-4 gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+            Live AI Bot Execution Log
+          </h3>
+          <p class="text-xs text-gray-400 mt-1">Real-time micro-trades processed across global exchanges</p>
+        </div>
+        <div class="flex gap-6">
+          <div>
+            <div class="text-xs text-gray-500">Portfolio Value</div>
+            <div id="balance" class="text-xl font-bold text-emerald-400">$1,000.00</div>
+          </div>
+          <div>
+            <div class="text-xs text-gray-500">Win Rate</div>
+            <div class="text-xl font-bold text-indigo-400">94.2%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trade Logs Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-gray-400">
+          <thead class="bg-gray-900/50 text-xs text-gray-500 uppercase">
+            <tr>
+              <th class="py-3 px-4">Asset</th>
+              <th class="py-3 px-4">Action</th>
+              <th class="py-3 px-4">AI Strategy</th>
+              <th class="py-3 px-4">Profit</th>
+            </tr>
+          </thead>
+          <tbody id="tradeLog" class="divide-y divide-gray-800/50">
+            <!-- Dynamic Trades Inserted Here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security & SSL Badges Section -->
+  <section id="security" class="py-12 bg-gray-950/50 border-y border-gray-800/80">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="text-center mb-8">
+        <h2 class="text-xl font-bold text-white">Bank-Grade Protection & Encryption</h2>
+        <p class="text-xs text-gray-400 mt-1">Your deposits and trade keys are protected by industry-leading security protocols.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div class="glass-card p-4 rounded-xl flex flex-col items-center justify-center">
+          <i class="fa-solid fa-lock text-emerald-400 text-3xl mb-2"></i>
+          <span class="text-xs font-semibold text-white">256-Bit SSL Encryption</span>
+          <span class="text-[10px] text-gray-500">Verified Certificate</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl flex flex-col items-center justify-center">
+          <i class="fa-solid fa-shield-virus text-indigo-400 text-3xl mb-2"></i>
+          <span class="text-xs font-semibold text-white">DDoS Protection</span>
+          <span class="text-[10px] text-gray-500">Cloudflare Shielded</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl flex flex-col items-center justify-center">
+          <i class="fa-solid fa-vault text-purple-400 text-3xl mb-2"></i>
+          <span class="text-xs font-semibold text-white">Cold Storage Vault</span>
+          <span class="text-[10px] text-gray-500">98% Offline Assets</span>
+        </div>
+        <div class="glass-card p-4 rounded-xl flex flex-col items-center justify-center">
+          <i class="fa-solid fa-user-shield text-pink-400 text-3xl mb-2"></i>
+          <span class="text-xs font-semibold text-white">2FA Authentication</span>
+          <span class="text-[10px] text-gray-500">Secured Access</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Deposit Modal -->
+  <div id="depositModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+    <div class="glass-card bg-gray-900 border border-gray-700 rounded-2xl max-w-md w-full p-6 relative">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+      <h3 class="text-xl font-bold text-white mb-2">Start Auto-Trading</h3>
+      <p class="text-xs text-gray-400 mb-6">Enter your deposit amount. Minimum required deposit is <strong>$1.00 USD</strong>.</p>
+      
+      <form id="depositForm" onsubmit="handleDeposit(event)">
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-gray-300 mb-2">Deposit Amount ($USD)</label>
+          <input type="number" id="depositAmount" min="1" step="0.01" value="1.00" required 
+                 class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 font-bold">
+        </div>
+        <div class="mb-6">
+          <label class="block text-xs font-medium text-gray-300 mb-2">Payment Method</label>
+          <select class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 text-sm">
+            <option>USDT (TRC20)</option>
+            <option>Bitcoin (BTC)</option>
+            <option>Ethereum (ETH)</option>
+            <option>Credit Card / Debit Card</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition">
+          Confirm & Activate AI Bot
+        </button>
+      </form>
+      <p class="text-[10px] text-center text-gray-500 mt-4"><i class="fa-solid fa-lock"></i> SSL Secured Transaction</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="py-6 text-center text-xs text-gray-600 border-t border-gray-900">
+    <p>© 2026 AuraTrade AI Inc. All rights reserved. Encrypted via 256-bit SSL Certificate.</p>
+  </footer>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    let portfolioValue = 1000.00;
+
+    // Open/Close Deposit Modal
+    function openModal() {
+      document.getElementById('depositModal').classList.remove('hidden');
+    }
+    function closeModal() {
+      document.getElementById('depositModal').classList.add('hidden');
+    }
+
+    // Handle Deposit Form Submission
+    function handleDeposit(event) {
+      event.preventDefault();
+      const amount = parseFloat(document.getElementById('depositAmount').value);
+      if (amount < 1) {
+        alert("Minimum deposit amount is $1.00");
+        return;
+      }
+      portfolioValue += amount;
+      document.getElementById('balance').innerText = `$${portfolioValue.toFixed(2)}`;
+      alert(`Success! Deposited $${amount.toFixed(2)}. AI Automated Bot is actively trading.`);
+      closeModal();
+    }
+
+    // Simulated Real-Time AI Trading Feed
+    const pairs = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'AVAX/USDT'];
+    const strategies = ['Arbitrage Scalp', 'Neural Trend Follow', 'Momentum Breakout'];
+
+    function generateTrade() {
+      const pair = pairs[Math.floor(Math.random() * pairs.length)];
+      const strategy = strategies[Math.floor(Math.random() * strategies.length)];
+      const profit = (Math.random() * 2.5 + 0.1).toFixed(2);
+      
+      portfolioValue += parseFloat(profit);
+      document.getElementById('balance').innerText = `$${portfolioValue.toFixed(2)}`;
+
+      const tbody = document.getElementById('tradeLog');
+      const row = document.createElement('tr');
+      row.className = 'border-b border-gray-800/40 hover:bg-gray-800/20 transition';
+      row.innerHTML = `
+        <td class="py-3 px-4 font-semibold text-white">${pair}</td>
+        <td class="py-3 px-4 text-emerald-400 font-medium">BUY / AUTO</td>
+        <td class="py-3 px-4 text-gray-400 text-xs">${strategy}</td>
+        <td class="py-3 px-4 text-emerald-400 font-bold">+$${profit}</td>
+      `;
+
+      tbody.insertBefore(row, tbody.firstChild);
+      if (tbody.children.length > 5) {
+        tbody.removeChild(tbody.lastChild);
+      }
+    }
+
+    // Run trade simulation every 3 seconds
+    setInterval(generateTrade, 3000);
+    generateTrade(); // Initial call
+  </script>
+</body>
+</html>
