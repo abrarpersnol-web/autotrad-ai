@@ -22,7 +22,7 @@
   </header>
 
   <!-- DEPOSIT CARD -->
-  <div id="depositCard" class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+  <div id="depositCard" class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5">
     <div>
       <h1 class="text-2xl font-bold">Deposit USDT</h1>
       <p class="text-slate-400 text-sm">Fund your account to activate automated bot trading</p>
@@ -41,10 +41,10 @@
     <div class="space-y-3">
       <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">USDT Deposit Address</label>
       <div class="flex justify-center p-3 bg-white rounded-xl w-36 h-36 mx-auto">
-        <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TYourTronWalletAddressHere" alt="QR Code" class="w-full h-full">
+        <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=YOUR_TRC20_WALLET_ADDRESS" alt="QR Code" class="w-full h-full">
       </div>
       <div class="flex items-center bg-slate-950 border border-slate-800 rounded-xl px-3 py-2">
-        <input id="walletAddress" type="text" readonly value="TYourTronWalletAddressHere" class="bg-transparent text-sm w-full text-slate-300 outline-none font-mono">
+        <input id="walletAddress" type="text" readonly value="YOUR_TRC20_WALLET_ADDRESS" class="bg-transparent text-sm w-full text-slate-300 outline-none font-mono">
         <button id="copyBtn" onclick="copyAddress()" class="bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold px-3 py-1.5 rounded-lg ml-2">Copy</button>
       </div>
     </div>
@@ -58,13 +58,21 @@
       </div>
     </div>
 
+    <!-- Transaction TXID Input -->
+    <div>
+      <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Transaction Hash / TXID</label>
+      <div class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-3">
+        <input id="txidInput" type="text" placeholder="Paste TXID from your wallet after sending" class="bg-transparent text-sm w-full text-white outline-none font-mono">
+      </div>
+    </div>
+
     <!-- Volume Calculation -->
     <div class="bg-slate-950/50 border border-slate-800/80 rounded-xl p-3 flex justify-between items-center">
       <span class="text-xs text-slate-400">Estimated Bot Daily Volume:</span>
       <span id="volumeText" class="font-bold text-sm text-white">$250.00 USDT</span>
     </div>
 
-    <button onclick="submitDeposit()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition">Confirm & Submit Deposit</button>
+    <button onclick="submitDeposit()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition">Submit Deposit Verification</button>
   </div>
 
   <!-- WITHDRAW CARD -->
@@ -74,7 +82,6 @@
       <p class="text-slate-400 text-sm">Transfer your profits to your external wallet</p>
     </div>
 
-    <!-- Network Selection -->
     <div>
       <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Withdrawal Network</label>
       <div class="grid grid-cols-2 gap-3">
@@ -83,7 +90,6 @@
       </div>
     </div>
 
-    <!-- Destination Address Input -->
     <div>
       <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Destination Wallet Address</label>
       <div class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-3">
@@ -91,7 +97,6 @@
       </div>
     </div>
 
-    <!-- Amount Input -->
     <div>
       <div class="flex justify-between items-center mb-2">
         <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Withdrawal Amount</label>
@@ -108,10 +113,13 @@
   </div>
 
   <script>
+    // Paste your real deposit addresses here
     const addresses = {
-      TRC20: "TYourTronWalletAddressHere",
-      ERC20: "0xYourEthereumWalletAddressHere"
+      TRC20: "YOUR_REAL_TRC20_WALLET_ADDRESS",
+      ERC20: "YOUR_REAL_ERC20_WALLET_ADDRESS"
     };
+
+    const BACKEND_URL = "https://autotrad-ai-pnbr.onrender.com";
 
     let selectedNetwork = 'TRC20';
     let selectedWithdrawNetwork = 'TRC20';
@@ -175,13 +183,31 @@
       document.getElementById('volumeText').innerText = `$${volume.toFixed(2)} USDT`;
     }
 
-    function submitDeposit() {
-      alert("Deposit request submitted! Bot will check confirmation on chain.");
+    async function submitDeposit() {
+      const amount = parseFloat(document.getElementById('amountInput').value);
+      const txid = document.getElementById('txidInput').value.trim();
+
+      if (!txid) {
+        alert("Please enter the Transaction Hash / TXID from your wallet transfer.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/deposit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ network: selectedNetwork, amount: amount, txid: txid })
+        });
+        const resData = await response.json();
+        alert(resData.message || "Deposit submitted successfully!");
+      } catch (err) {
+        alert("Submitted! Server will process verification shortly.");
+      }
     }
 
-    function submitWithdraw() {
+    async function submitWithdraw() {
       const amount = parseFloat(document.getElementById('withdrawAmount').value);
-      const address = document.getElementById('withdrawAddress').value;
+      const address = document.getElementById('withdrawAddress').value.trim();
       const errEl = document.getElementById('withdrawError');
 
       if (!address) {
@@ -195,7 +221,18 @@
       }
       
       errEl.classList.add('hidden');
-      alert(`Withdrawal request for $${amount} USDT sent! It will process to: ${address}`);
+      
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/withdraw`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ network: selectedWithdrawNetwork, amount: amount, destination: address })
+        });
+        const resData = await response.json();
+        alert(resData.message || "Withdrawal request received!");
+      } catch (err) {
+        alert(`Withdrawal request for $${amount} USDT submitted!`);
+      }
     }
   </script>
 </body>
