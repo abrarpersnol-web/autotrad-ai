@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autotrad AI - Deposit</title>
+  <title>Autotrad AI - Deposit & Withdraw</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-white min-h-screen p-4 flex flex-col items-center">
@@ -14,11 +14,15 @@
       <div class="bg-blue-600 font-bold px-3 py-1 rounded-lg text-lg">A</div>
       <span class="font-bold text-xl">Autotrad <span class="text-blue-500">AI</span></span>
     </div>
-    <button class="bg-emerald-600 hover:bg-emerald-500 font-medium px-4 py-2 rounded-lg text-sm">Deposit USDT</button>
+    <!-- Tab Controls -->
+    <div class="bg-slate-900 border border-slate-800 p-1 rounded-xl flex space-x-1">
+      <button id="tabDepositBtn" onclick="switchTab('deposit')" class="bg-emerald-600 text-white font-medium px-3 py-1.5 rounded-lg text-xs transition">Deposit</button>
+      <button id="tabWithdrawBtn" onclick="switchTab('withdraw')" class="text-slate-400 font-medium px-3 py-1.5 rounded-lg text-xs hover:text-white transition">Withdraw</button>
+    </div>
   </header>
 
-  <!-- Deposit Card -->
-  <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+  <!-- DEPOSIT CARD -->
+  <div id="depositCard" class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
     <div>
       <h1 class="text-2xl font-bold">Deposit USDT</h1>
       <p class="text-slate-400 text-sm">Fund your account to activate automated bot trading</p>
@@ -36,12 +40,9 @@
     <!-- QR Code & Address -->
     <div class="space-y-3">
       <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">USDT Deposit Address</label>
-      
-      <!-- QR Image -->
       <div class="flex justify-center p-3 bg-white rounded-xl w-36 h-36 mx-auto">
         <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TYourTronWalletAddressHere" alt="QR Code" class="w-full h-full">
       </div>
-
       <div class="flex items-center bg-slate-950 border border-slate-800 rounded-xl px-3 py-2">
         <input id="walletAddress" type="text" readonly value="TYourTronWalletAddressHere" class="bg-transparent text-sm w-full text-slate-300 outline-none font-mono">
         <button id="copyBtn" onclick="copyAddress()" class="bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold px-3 py-1.5 rounded-lg ml-2">Copy</button>
@@ -63,8 +64,47 @@
       <span id="volumeText" class="font-bold text-sm text-white">$250.00 USDT</span>
     </div>
 
-    <!-- Confirm Button -->
-    <button onclick="submitDeposit()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition">Confirm & Submit Transaction</button>
+    <button onclick="submitDeposit()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition">Confirm & Submit Deposit</button>
+  </div>
+
+  <!-- WITHDRAW CARD -->
+  <div id="withdrawCard" class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 hidden">
+    <div>
+      <h1 class="text-2xl font-bold">Withdraw USDT</h1>
+      <p class="text-slate-400 text-sm">Transfer your profits to your external wallet</p>
+    </div>
+
+    <!-- Network Selection -->
+    <div>
+      <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Select Withdrawal Network</label>
+      <div class="grid grid-cols-2 gap-3">
+        <button id="wTrcBtn" onclick="setWithdrawNetwork('TRC20')" class="py-3 rounded-xl border-2 border-blue-500 bg-blue-950/30 text-blue-400 font-semibold text-sm">TRC20 (Tron)</button>
+        <button id="wErcBtn" onclick="setWithdrawNetwork('ERC20')" class="py-3 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-semibold text-sm">ERC20 (Ethereum)</button>
+      </div>
+    </div>
+
+    <!-- Destination Address Input -->
+    <div>
+      <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Destination Wallet Address</label>
+      <div class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-3">
+        <input id="withdrawAddress" type="text" placeholder="Paste TRC20 or ERC20 wallet address" class="bg-transparent text-sm w-full text-white outline-none font-mono">
+      </div>
+    </div>
+
+    <!-- Amount Input -->
+    <div>
+      <div class="flex justify-between items-center mb-2">
+        <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Withdrawal Amount</label>
+        <span class="text-xs text-amber-400 font-medium">Min: $5.00 USDT</span>
+      </div>
+      <div class="flex items-center bg-slate-950 border border-slate-800 rounded-xl px-4 py-3">
+        <input id="withdrawAmount" type="number" min="5" placeholder="5" class="bg-transparent text-lg font-bold w-full text-white outline-none">
+        <span class="text-blue-500 font-bold">USDT</span>
+      </div>
+      <p id="withdrawError" class="text-red-400 text-xs mt-1 hidden">Minimum withdrawal amount is $5 USDT.</p>
+    </div>
+
+    <button onclick="submitWithdraw()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition">Submit Withdrawal Request</button>
   </div>
 
   <script>
@@ -74,6 +114,26 @@
     };
 
     let selectedNetwork = 'TRC20';
+    let selectedWithdrawNetwork = 'TRC20';
+
+    function switchTab(tab) {
+      const depositCard = document.getElementById('depositCard');
+      const withdrawCard = document.getElementById('withdrawCard');
+      const tabDepositBtn = document.getElementById('tabDepositBtn');
+      const tabWithdrawBtn = document.getElementById('tabWithdrawBtn');
+
+      if (tab === 'deposit') {
+        depositCard.classList.remove('hidden');
+        withdrawCard.classList.add('hidden');
+        tabDepositBtn.className = "bg-emerald-600 text-white font-medium px-3 py-1.5 rounded-lg text-xs transition";
+        tabWithdrawBtn.className = "text-slate-400 font-medium px-3 py-1.5 rounded-lg text-xs hover:text-white transition";
+      } else {
+        depositCard.classList.add('hidden');
+        withdrawCard.classList.remove('hidden');
+        tabWithdrawBtn.className = "bg-blue-600 text-white font-medium px-3 py-1.5 rounded-lg text-xs transition";
+        tabDepositBtn.className = "text-slate-400 font-medium px-3 py-1.5 rounded-lg text-xs hover:text-white transition";
+      }
+    }
 
     function setNetwork(net) {
       selectedNetwork = net;
@@ -90,6 +150,17 @@
       }
     }
 
+    function setWithdrawNetwork(net) {
+      selectedWithdrawNetwork = net;
+      if(net === 'TRC20') {
+        document.getElementById('wTrcBtn').className = "py-3 rounded-xl border-2 border-blue-500 bg-blue-950/30 text-blue-400 font-semibold text-sm";
+        document.getElementById('wErcBtn').className = "py-3 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-semibold text-sm";
+      } else {
+        document.getElementById('wErcBtn').className = "py-3 rounded-xl border-2 border-blue-500 bg-blue-950/30 text-blue-400 font-semibold text-sm";
+        document.getElementById('wTrcBtn').className = "py-3 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 font-semibold text-sm";
+      }
+    }
+
     function copyAddress() {
       const addr = document.getElementById('walletAddress');
       navigator.clipboard.writeText(addr.value);
@@ -100,12 +171,31 @@
 
     function updateVolume() {
       const amt = parseFloat(document.getElementById('amountInput').value) || 0;
-      const volume = amt * 2.5; // Example calculation (2.5x volume)
+      const volume = amt * 2.5;
       document.getElementById('volumeText').innerText = `$${volume.toFixed(2)} USDT`;
     }
 
     function submitDeposit() {
       alert("Deposit request submitted! Bot will check confirmation on chain.");
+    }
+
+    function submitWithdraw() {
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      const address = document.getElementById('withdrawAddress').value;
+      const errEl = document.getElementById('withdrawError');
+
+      if (!address) {
+        alert("Please enter a valid destination wallet address.");
+        return;
+      }
+
+      if (isNaN(amount) || amount < 5) {
+        errEl.classList.remove('hidden');
+        return;
+      }
+      
+      errEl.classList.add('hidden');
+      alert(`Withdrawal request for $${amount} USDT sent! It will process to: ${address}`);
     }
   </script>
 </body>
