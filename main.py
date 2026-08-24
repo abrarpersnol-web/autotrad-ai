@@ -1,9 +1,9 @@
-cat << 'EOF' > main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Ai Trade API")
 
+# Allow requests from frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,4 +15,7 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"status": "online", "message": "Ai Trade Backend is running!"}
-EOF
+
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok"}
