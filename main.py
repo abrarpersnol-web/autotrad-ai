@@ -22,18 +22,16 @@ class WithdrawRequest(BaseModel):
     network: str
     amount: float
     destination: str
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+import os
 
-@app.get("/")
-def read_root():
-    return {"status": "online", "message": "Ai Trade Backend API Active"}
+app = FastAPI()
 
-@app.post("/api/deposit")
-def handle_deposit(data: DepositRequest):
-    # Here your backend logs or verifies the TXID on chain
-    return {"status": "success", "message": f"Received deposit submission for {data.amount} USDT ({data.network}). TXID: {data.txid}"}
+if os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.post("/api/withdraw")
-def handle_withdraw(data: WithdrawRequest):
-    if data.amount < 5:
-        return {"status": "error", "message": "Minimum withdrawal is $5 USDT"}
-    return {"status": "success", "message": f"Withdrawal request of {data.amount} USDT to {data.destination} submitted."}
+@app.get("/", response_class=FileResponse)
+async def read_index():
+    return FileResponse("index.html")
