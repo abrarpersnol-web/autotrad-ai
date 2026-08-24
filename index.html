@@ -1,112 +1,272 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autotrad AI - Safe Automated Trading</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autotrad AI | Pro Crypto Trading Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Ethers.js for Web3 Wallet Connectivity -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#2563eb', 600: '#1d4ed8', 700: '#1e40af' },
+            darkBg: '#0b0e14', darkCard: '#151921', darkBorder: '#232833'
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-slate-950 text-white min-h-screen p-4 flex flex-col items-center">
+<body class="bg-darkBg text-gray-200 font-sans antialiased min-h-screen flex flex-col">
 
-  <header class="w-full max-w-md flex justify-between items-center py-4 mb-4">
-    <div class="flex items-center space-x-2">
-      <div class="bg-blue-600 font-bold px-3 py-1 rounded-lg text-lg">A</div>
-      <span class="font-bold text-xl">Autotrad <span class="text-blue-500">AI</span></span>
+  <!-- TOP NAVIGATION BAR -->
+  <header class="border-b border-darkBorder bg-darkCard/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      
+      <div class="flex items-center space-x-8">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('market')">
+          <div class="bg-brand-600 text-white p-2 rounded-lg font-bold flex items-center justify-center w-9 h-9">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
+          </div>
+          <span class="text-xl font-bold text-white">Autotrad <span class="text-brand-500">AI</span></span>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+          <button onclick="switchTab('market')" id="nav-market" class="text-brand-500 flex items-center space-x-2 py-2">
+            <i data-lucide="line-chart" class="w-4 h-4"></i>
+            <span>Markets</span>
+          </button>
+          <button onclick="switchTab('trade')" id="nav-trade" class="text-gray-400 hover:text-white flex items-center space-x-2 py-2">
+            <i data-lucide="bot" class="w-4 h-4"></i>
+            <span>AI Trading</span>
+          </button>
+          <button onclick="switchTab('wallet')" id="nav-wallet" class="text-gray-400 hover:text-white flex items-center space-x-2 py-2">
+            <i data-lucide="wallet" class="w-4 h-4"></i>
+            <span>Wallet & Capital</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <!-- Web2 Login Button -->
+        <button onclick="openLoginModal()" class="text-sm font-medium text-gray-300 hover:text-white px-3 py-2 rounded-lg border border-darkBorder hover:bg-darkBorder transition flex items-center space-x-2">
+          <i data-lucide="user" class="w-4 h-4"></i>
+          <span id="user-display">Web2 Login</span>
+        </button>
+
+        <!-- Web3 Wallet Button -->
+        <button id="connect-wallet-btn" onclick="connectWeb3Wallet()" class="bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm px-4 py-2 rounded-lg transition flex items-center space-x-2 shadow-lg shadow-brand-600/20">
+          <i data-lucide="wallet-cards" class="w-4 h-4"></i>
+          <span id="wallet-btn-text">Connect Web3 Wallet</span>
+        </button>
+      </div>
     </div>
-    <button id="connectBtn" onclick="connectWallet()" class="bg-blue-600 font-semibold px-4 py-2 rounded-xl text-xs">
-      Connect Wallet
-    </button>
   </header>
 
-  <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5">
-    
-    <!-- Account Setup -->
-    <div>
-      <h2 class="text-lg font-bold">1. Account Details</h2>
-      <input id="username" type="text" placeholder="Enter Username" class="w-full mt-2 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white outline-none">
-    </div>
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
 
-    <!-- Deposit Section -->
-    <div>
-      <h2 class="text-lg font-bold">2. Deposit Capital ($1 Min)</h2>
-      <p class="text-xs text-slate-400 mb-2">Deposit BNB/ETH or USDT equivalent to start safe AI trading.</p>
-      <div class="flex space-x-2">
-        <input id="depositAmount" type="number" step="0.1" min="1" value="1.00" class="w-2/3 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none">
-        <button onclick="processDeposit()" class="w-1/3 bg-blue-600 hover:bg-blue-500 font-bold rounded-xl text-sm">Deposit</button>
+    <!-- 1. MARKETS (TradingView Chart) -->
+    <section id="tab-market" class="space-y-6">
+      <div>
+        <h1 class="text-2xl font-bold text-white">Crypto Market Analysis</h1>
+        <p class="text-sm text-gray-400">Real-time market signals analyzed by Autotrad AI trading engine.</p>
+      </div>
+      <div class="bg-darkCard border border-darkBorder rounded-xl p-4 h-[500px]">
+        <div id="tradingview_chart" style="height:100%;width:100%"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+        <script type="text/javascript">
+          new TradingView.widget({
+            "autosize": true,
+            "symbol": "BINANCE:BTCUSDT",
+            "interval": "D",
+            "theme": "dark",
+            "style": "1",
+            "container_id": "tradingview_chart"
+          });
+        </script>
+      </div>
+    </section>
+
+    <!-- 2. AI TRADING BOT -->
+    <section id="tab-trade" class="hidden space-y-6">
+      <h1 class="text-2xl font-bold text-white">AI Automated Trading Execution</h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-darkCard border border-darkBorder rounded-xl p-6 space-y-4">
+          <h2 class="text-lg font-semibold text-white flex items-center space-x-2">
+            <i data-lucide="shield-check" class="text-emerald-400 w-5 h-5"></i>
+            <span>AI Risk & Engine Settings</span>
+          </h2>
+          <div class="p-4 bg-darkBg rounded-lg border border-darkBorder space-y-3">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">AI Risk Mode:</span>
+              <span class="text-emerald-400 font-medium">Low-Risk Safe Mode</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Current Balance:</span>
+              <span id="ai-balance-display" class="text-white font-bold">$0.00 USDT</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Trading Status:</span>
+              <span id="ai-status-text" class="text-amber-400 font-medium">Idle (Awaiting Deposit)</span>
+            </div>
+          </div>
+          <button onclick="toggleAITrading()" id="ai-toggle-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 py-2.5 rounded-lg font-medium text-white transition">Start AI Safe Trading</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. WALLET SERVICE (DEPOSIT & WITHDRAWAL) -->
+    <section id="tab-wallet" class="hidden space-y-6">
+      <h1 class="text-2xl font-bold text-white">Own Wallet Service & Cashier</h1>
+      <div class="max-w-xl mx-auto bg-darkCard border border-darkBorder rounded-xl p-6 space-y-6">
+        
+        <!-- DEPOSIT -->
+        <div class="space-y-3">
+          <h2 class="text-md font-semibold text-white flex items-center space-x-2">
+            <i data-lucide="arrow-down-left" class="text-emerald-400 w-5 h-5"></i>
+            <span>Deposit Capital ($1 Min)</span>
+          </h2>
+          <div class="flex space-x-2">
+            <input id="deposit-amount" type="number" value="10.00" class="w-full bg-darkBg border border-darkBorder rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-500" />
+            <button onclick="handleDeposit()" class="bg-brand-600 hover:bg-brand-700 px-6 py-2 rounded-lg font-medium text-white transition">Deposit</button>
+          </div>
+        </div>
+
+        <hr class="border-darkBorder" />
+
+        <!-- WITHDRAWAL -->
+        <div class="space-y-4">
+          <h2 class="text-md font-semibold text-white flex items-center space-x-2">
+            <i data-lucide="arrow-up-right" class="text-red-400 w-5 h-5"></i>
+            <span>Withdraw Capital & Earnings</span>
+          </h2>
+          <input id="withdraw-address" type="text" placeholder="Destination Address (0x... Web3 or Web2 Account ID)" class="w-full bg-darkBg border border-darkBorder rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-500 text-sm" />
+          <input id="withdraw-amount" type="number" placeholder="Amount ($)" class="w-full bg-darkBg border border-darkBorder rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-500 text-sm" />
+          <button onclick="handleWithdrawal()" class="w-full bg-emerald-600 hover:bg-emerald-700 py-2.5 rounded-lg font-medium text-white transition">Withdraw Funds</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- WEB2 LOGIN MODAL -->
+  <div id="login-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-darkCard border border-darkBorder rounded-xl max-w-md w-full p-6 space-y-6 relative">
+      <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <h2 class="text-xl font-bold text-white">Web2 Account Login</h2>
+      <div class="space-y-4">
+        <div>
+          <label class="text-sm text-gray-400">Username</label>
+          <input id="login-username" type="text" placeholder="Enter username" class="w-full mt-1 bg-darkBg border border-darkBorder rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-500" />
+        </div>
+        <button onclick="submitLogin()" class="w-full bg-brand-600 hover:bg-brand-700 py-2.5 rounded-lg font-medium text-white transition">Sign In</button>
       </div>
     </div>
-
-    <!-- AI Bot Status -->
-    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs space-y-1">
-      <div class="flex justify-between">
-        <span class="text-slate-400">AI Risk Strategy:</span>
-        <span class="text-emerald-400 font-bold">Low-Risk Safe Mode</span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-slate-400">Trading Status:</span>
-        <span id="aiStatus" class="text-amber-400 font-bold">Idle (Awaiting $1+ Deposit)</span>
-      </div>
-    </div>
-
-    <!-- Withdrawal Section -->
-    <div>
-      <h2 class="text-lg font-bold">3. Withdraw Earnings</h2>
-      <input id="withdrawAddr" type="text" placeholder="Destination Wallet (0x... or Trust Wallet)" class="w-full mt-2 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-white outline-none">
-      <div class="flex space-x-2 mt-2">
-        <input id="withdrawAmount" type="number" step="0.1" placeholder="Amount ($)" class="w-2/3 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-white outline-none">
-        <button onclick="processWithdrawal()" class="w-1/3 bg-emerald-600 hover:bg-emerald-500 font-bold rounded-xl text-sm">Withdraw</button>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    let provider, signer, userAddress = "";
-    const PLATFORM_TREASURY = "0x73e8...324C"; // Insert your central platform vault address
+    lucide.createIcons();
 
-    async function connectWallet() {
+    // App State
+    let userBalance = 0.00;
+    let web3Address = null;
+    let isTradingActive = false;
+
+    // Navigation Logic
+    function switchTab(tabName) {
+      ['market', 'trade', 'wallet'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add('hidden');
+        document.getElementById(`nav-${t}`).classList.remove('text-brand-500');
+        document.getElementById(`nav-${t}`).classList.add('text-gray-400');
+      });
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+      document.getElementById(`nav-${tabName}`).classList.add('text-brand-500');
+      document.getElementById(`nav-${tabName}`).classList.remove('text-gray-400');
+    }
+
+    // WEB3 WALLET INTEGRATION
+    async function connectWeb3Wallet() {
       if (window.ethereum) {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = provider.getSigner();
-        userAddress = await signer.getAddress();
-        document.getElementById('connectBtn').innerText = userAddress.substring(0,6) + "...";
+        try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const accounts = await provider.send("eth_requestAccounts", []);
+          web3Address = accounts[0];
+          const shortAddress = web3Address.substring(0, 6) + "..." + web3Address.substring(web3Address.length - 4);
+          document.getElementById('wallet-btn-text').innerText = shortAddress;
+          alert("Connected Web3 Wallet: " + web3Address);
+        } catch (err) {
+          alert("Wallet Connection Failed: " + err.message);
+        }
       } else {
-        alert("Please use MetaMask or Trust Wallet DApp browser.");
+        alert("No Web3 wallet detected! Please install MetaMask or Trust Wallet extension.");
       }
     }
 
-    async function processDeposit() {
-      const username = document.getElementById('username').value;
-      const amount = parseFloat(document.getElementById('depositAmount').value);
-
-      if (!username) return alert("Enter a username first.");
-      if (amount < 1.0) return alert("Minimum deposit is $1.");
-
-      try {
-        document.getElementById('aiStatus').innerText = "Processing Deposit...";
-        const tx = await signer.sendTransaction({
-          to: PLATFORM_TREASURY,
-          value: ethers.utils.parseEther("0.0005") // Equivalent value transfer
-        });
-        await tx.wait();
-
-        document.getElementById('aiStatus').innerText = "Active: Executing Low-Risk AI Trades";
-        alert("Deposit Successful! Safe AI bot is now trading with your capital.");
-      } catch (err) {
-        alert("Deposit failed: " + err.message);
+    // WEB2 LOGIN INTEGRATION
+    function openLoginModal() { document.getElementById('login-modal').classList.replace('hidden', 'flex'); }
+    function closeLoginModal() { document.getElementById('login-modal').classList.replace('flex', 'hidden'); }
+    function submitLogin() {
+      const user = document.getElementById('login-username').value;
+      if (user) {
+        document.getElementById('user-display').innerText = user;
+        closeLoginModal();
+        alert(`Welcome back, ${user}!`);
       }
     }
 
-    async function processWithdrawal() {
-      const username = document.getElementById('username').value;
-      const withdrawAddr = document.getElementById('withdrawAddr').value;
-      const amount = document.getElementById('withdrawAmount').value;
+    // WALLET SERVICE: DEPOSIT & WITHDRAW
+    function handleDeposit() {
+      const amount = parseFloat(document.getElementById('deposit-amount').value);
+      if (amount >= 1.0) {
+        userBalance += amount;
+        updateUI();
+        alert(`Successfully deposited $${amount.toFixed(2)} USDT.`);
+      } else {
+        alert("Minimum deposit is $1.00");
+      }
+    }
 
-      if (!withdrawAddr || !amount) return alert("Enter withdrawal address and amount.");
+    function handleWithdrawal() {
+      const addr = document.getElementById('withdraw-address').value;
+      const amount = parseFloat(document.getElementById('withdraw-amount').value);
+      if (!addr) return alert("Please specify a valid destination address.");
+      if (amount <= 0 || amount > userBalance) return alert("Invalid or insufficient balance for withdrawal.");
+      
+      userBalance -= amount;
+      updateUI();
+      alert(`Withdrawal request of $${amount.toFixed(2)} sent to ${addr}`);
+    }
 
-      alert(`Withdrawal request for $${amount} submitted! Funds will arrive at ${withdrawAddr} via Web3.`);
+    // AI TRADING AUTOMATION
+    function toggleAITrading() {
+      if (userBalance < 1.0) return alert("Please deposit at least $1.00 to activate AI safe trading.");
+      isTradingActive = !isTradingActive;
+      const statusText = document.getElementById('ai-status-text');
+      const toggleBtn = document.getElementById('ai-toggle-btn');
+      
+      if (isTradingActive) {
+        statusText.innerText = "Active (Scanning AI Low-Risk Trades)";
+        statusText.className = "text-emerald-400 font-bold animate-pulse";
+        toggleBtn.innerText = "Stop AI Trading";
+        toggleBtn.className = "w-full bg-red-600 hover:bg-red-700 py-2.5 rounded-lg font-medium text-white transition";
+      } else {
+        statusText.innerText = "Idle (Paused)";
+        statusText.className = "text-amber-400 font-medium";
+        toggleBtn.innerText = "Start AI Safe Trading";
+        toggleBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 py-2.5 rounded-lg font-medium text-white transition";
+      }
+    }
+
+    function updateUI() {
+      document.getElementById('ai-balance-display').innerText = `$${userBalance.toFixed(2)} USDT`;
     }
   </script>
 </body>
