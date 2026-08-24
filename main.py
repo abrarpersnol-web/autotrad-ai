@@ -1,9 +1,11 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI(title="Ai Trade API")
 
-# Allow requests from frontend
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,9 +14,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve index.html at root
 @app.get("/")
 def read_root():
-    return {"status": "online", "message": "Ai Trade Backend is running!"}
+    if os.path.exists("index.html1"):  # Check for index.html or index.html1
+        return FileResponse("index.html1")
+    elif os.path.exists("index.html"):
+        return FileResponse("index.html")
+    return {"status": "online", "message": "index.html not found"}
 
 @app.get("/api/health")
 def health_check():
